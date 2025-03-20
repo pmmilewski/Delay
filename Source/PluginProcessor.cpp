@@ -11,16 +11,11 @@
 
 //==============================================================================
 DelayAudioProcessor::DelayAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
-#endif
+                       ),
+    params(apvts)
 {
 }
 
@@ -93,8 +88,8 @@ void DelayAudioProcessor::changeProgramName (int index, const juce::String& newN
 //==============================================================================
 void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    params.prepareToPlay(sampleRate);
+    params.reset();
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -121,17 +116,17 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
-    float gainInDecibels = -6.0f;
-    float gain = juce::Decibels::decibelsToGain(gainInDecibels);
+    params.update();
+
+    float* channelDataL = buffer.getWritePointer(0);
+    float* channelDataR = buffer.getWritePointer(1);
     
-    for (auto channel = 0; channel < totalNumInputChannels; ++channel  )
+    for (auto sample = 0; sample < buffer.getNumSamples(); ++sample)
     {
-        auto* channelData = buffer.getWritePointer(channel);
+        params.smoothen();
         
-        for (auto sample = 0; sample < buffer.getNumSamples(); ++sample)
-        {
-            channelData[sample] *= gain;
-        }
+        channelDataL[sample] *= params.gain;
+        channelDataR[sample] *= params.gain;
     }
 }
 
@@ -149,15 +144,17 @@ juce::AudioProcessorEditor* DelayAudioProcessor::createEditor()
 //==============================================================================
 void DelayAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    copyXmlToBinary(*apvts.copyState().createXml(), destData);
+    //DBG(apvts.copyState().toXmlString());
 }
 
 void DelayAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+    if (xml != nullptr && xml->hasTagName(apvts.state.getType()))
+    {
+        apvts.replaceState(juce::ValueTree::fromXml(*xml));
+    }
 }
 
 //==============================================================================
