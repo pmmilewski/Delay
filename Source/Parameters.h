@@ -24,6 +24,8 @@ public:
     void smoothen() noexcept;
     
     float gain = { 0.0f };
+    static constexpr float minDelayTime = 5.0f;
+    static constexpr float maxDelayTime = 5000.0f;
 
 private:
     juce::AudioParameterFloat* gainParam = { nullptr };
