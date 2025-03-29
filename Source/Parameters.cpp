@@ -48,6 +48,21 @@ static juce::String stringFromPercent(float value, int)
   return juce::String(static_cast<int>(value)) + " %";
 }
 
+static float millisecondsFromString(const juce::String& text)
+{
+  float value = text.getFloatValue();
+
+  if (!text.endsWithIgnoreCase("ms"))
+  {
+    if (text.endsWithIgnoreCase("s") || value < Parameters::minDelayTime)
+    {
+      return value * 1000.0f;
+    }
+  }
+
+  return value;
+}
+
 Parameters::Parameters(juce::AudioProcessorValueTreeState& apvts)
 {
   castParameter(apvts, gainParamID, gainParam);
@@ -70,7 +85,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::createParameterL
     "Delay Time",
     juce::NormalisableRange<float> {minDelayTime, maxDelayTime, 0.001f, 0.25f},
     100.0f,
-    juce::AudioParameterFloatAttributes().withStringFromValueFunction(stringFromMilliseconds)
+    juce::AudioParameterFloatAttributes()
+    .withStringFromValueFunction(stringFromMilliseconds)
+    .withValueFromStringFunction(millisecondsFromString)
     ));
 
   parameterLayout.add(std::make_unique<juce::AudioParameterFloat>(
