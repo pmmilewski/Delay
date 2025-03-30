@@ -8,6 +8,8 @@
               cppLanguageStandard="20">
   <MAINGROUP id="YafjCY" name="Delay">
     <GROUP id="{A7CE7B1F-0112-CC0C-128D-25E4ED031AE2}" name="Source">
+      <FILE id="kdzF3a" name="LookAndFeel.cpp" compile="1" resource="0" file="Source/LookAndFeel.cpp"/>
+      <FILE id="xJ3vTq" name="LookAndFeel.h" compile="0" resource="0" file="Source/LookAndFeel.h"/>
       <FILE id="v5kp1H" name="RotaryKnob.cpp" compile="1" resource="0" file="Source/RotaryKnob.cpp"/>
       <FILE id="mLcjzB" name="RotaryKnob.h" compile="0" resource="0" file="Source/RotaryKnob.h"/>
       <FILE id="Zv0EAA" name="Parameters.cpp" compile="1" resource="0" file="Source/Parameters.cpp"/>

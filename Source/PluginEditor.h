@@ -5,6 +5,7 @@
 #include "PluginProcessor.h"
 #include "Parameters.h"
 #include "RotaryKnob.h"
+#include "LookAndFeel.h"
 
 class DelayAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
