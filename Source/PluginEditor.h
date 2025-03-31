@@ -18,7 +18,7 @@ public:
 
 private:
     DelayAudioProcessor& audioProcessor;
-    RotaryKnob gainKnob {"Gain", *audioProcessor.getApvts(), gainParamID};
+    RotaryKnob gainKnob {"Gain", *audioProcessor.getApvts(), gainParamID, true};
     RotaryKnob mixKnob {"Mix", *audioProcessor.getApvts(), mixParamID};
     RotaryKnob delayTimeKnob {"Time", *audioProcessor.getApvts(), delayTimeParamID};
     juce::GroupComponent delayGroup, feedbackGroup, outputGroup;

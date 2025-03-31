@@ -23,6 +23,9 @@ DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
     outputGroup.addAndMakeVisible(gainKnob);
     outputGroup.addAndMakeVisible(mixKnob);
     addAndMakeVisible(outputGroup);
+
+    // way to set separate colors to individual knobs
+    //gainKnob.slider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::green);
     
     setSize (500, 300);
 }
