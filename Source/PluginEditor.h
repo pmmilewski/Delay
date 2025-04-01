@@ -22,6 +22,7 @@ private:
     RotaryKnob mixKnob {"Mix", *audioProcessor.getApvts(), mixParamID};
     RotaryKnob delayTimeKnob {"Time", *audioProcessor.getApvts(), delayTimeParamID};
     juce::GroupComponent delayGroup, feedbackGroup, outputGroup;
+    MainLookAndFeel mainLF;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessorEditor)
 };
