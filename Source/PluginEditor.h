@@ -21,7 +21,7 @@ private:
     RotaryKnob gainKnob {"Gain", *audioProcessor.getApvts(), gainParamID, true};
     RotaryKnob mixKnob {"Mix", *audioProcessor.getApvts(), mixParamID};
     RotaryKnob delayTimeKnob {"Time", *audioProcessor.getApvts(), delayTimeParamID};
-    RotaryKnob feedbackKnob {"Feedback", *audioProcessor.getApvts(), feedbackParamID};
+    RotaryKnob feedbackKnob {"Feedback", *audioProcessor.getApvts(), feedbackParamID, true};
     juce::GroupComponent delayGroup, feedbackGroup, outputGroup;
     MainLookAndFeel mainLF;
 
