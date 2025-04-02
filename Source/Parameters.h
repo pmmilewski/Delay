@@ -14,6 +14,7 @@
 const juce::ParameterID gainParamID {"gain", 1};
 const juce::ParameterID delayTimeParamID {"delayTime", 1};
 const juce::ParameterID mixParamID {"mix", 1};
+const juce::ParameterID feedbackParamID {"feedback", 1};
 
 class Parameters
 {
@@ -30,6 +31,7 @@ public:
     static constexpr float maxDelayTime = {5000.0f};
     float delayTime = {0.0f};
     float mix = {1.0f};
+    float feedback = {0.0f};
 
 private:
     juce::AudioParameterFloat* gainParam = { nullptr };
@@ -41,6 +43,9 @@ private:
 
     juce::AudioParameterFloat* mixParam = { nullptr };
     juce::LinearSmoothedValue<float> mixSmoother = { 0.0f };
+
+    juce::AudioParameterFloat* feedbackParam = { nullptr };
+    juce::LinearSmoothedValue<float> feedbackSmoother = { 0.0f };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Parameters)
 };
