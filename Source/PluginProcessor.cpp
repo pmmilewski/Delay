@@ -142,8 +142,9 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
     {
         params.smoothen();
 
-        float delayInSamples = params.delayTime / 1000.0f * sampleRate;
-        delayLine.setDelay(delayInSamples);
+        float delayInSamplesL = params.delayTimeL / 1000.0f * sampleRate;
+        float delayInSamplesR = params.delayTimeR / 1000.0f * sampleRate;
+        delayLine.setDelay(std::max(delayInSamplesL, delayInSamplesR));
 
         float dryL = channelDataL[sample];
         float dryR = channelDataR[sample];
@@ -151,8 +152,8 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
         delayLine.pushSample(0, dryL + feedbackL);
         delayLine.pushSample(1, dryR + feedbackR);
 
-        float wetL = delayLine.popSample(0);
-        float wetR = delayLine.popSample(1);
+        float wetL = delayLine.popSample(0, delayInSamplesL);
+        float wetR = delayLine.popSample(1, delayInSamplesR);
 
         feedbackL = wetL * params.feedback;
         feedbackR = wetR * params.feedback;

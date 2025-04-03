@@ -12,7 +12,8 @@
 #include <JuceHeader.h>
 
 const juce::ParameterID gainParamID {"gain", 1};
-const juce::ParameterID delayTimeParamID {"delayTime", 1};
+const juce::ParameterID delayTimeLParamID {"delayTimeL", 1};
+const juce::ParameterID delayTimeRParamID {"delayTimeR", 1};
 const juce::ParameterID mixParamID {"mix", 1};
 const juce::ParameterID feedbackParamID {"feedback", 1};
 
@@ -29,7 +30,8 @@ public:
     float gain = { 0.0f };
     static constexpr float minDelayTime = {5.0f};
     static constexpr float maxDelayTime = {5000.0f};
-    float delayTime = {0.0f};
+    float delayTimeL = {0.0f};
+    float delayTimeR = {0.0f};
     float mix = {1.0f};
     float feedback = {0.0f};
 
@@ -37,9 +39,13 @@ private:
     juce::AudioParameterFloat* gainParam = { nullptr };
     juce::LinearSmoothedValue<float> gainSmoother = { 0.0f };
 
-    juce::AudioParameterFloat* delayTimeParam = { nullptr };
-    float targetDelayTime = {0.0f};
-    float coeff = {0.0f}; // one-pole smoothing
+    juce::AudioParameterFloat* delayTimeLParam = { nullptr };
+    float targetDelayTimeL = {0.0f};
+    float coeffL = {0.0f}; // one-pole smoothing
+
+    juce::AudioParameterFloat* delayTimeRParam = { nullptr };
+    float targetDelayTimeR = {0.0f};
+    float coeffR = {0.0f}; // one-pole smoothing
 
     juce::AudioParameterFloat* mixParam = { nullptr };
     juce::LinearSmoothedValue<float> mixSmoother = { 0.0f };

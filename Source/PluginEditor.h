@@ -20,7 +20,8 @@ private:
     DelayAudioProcessor& audioProcessor;
     RotaryKnob gainKnob {"Gain", *audioProcessor.getApvts(), gainParamID, true};
     RotaryKnob mixKnob {"Mix", *audioProcessor.getApvts(), mixParamID};
-    RotaryKnob delayTimeKnob {"Time", *audioProcessor.getApvts(), delayTimeParamID};
+    RotaryKnob delayTimeLKnob {"Time (L)", *audioProcessor.getApvts(), delayTimeLParamID};
+    RotaryKnob delayTimeRKnob {"Time (R)", *audioProcessor.getApvts(), delayTimeRParamID};
     RotaryKnob feedbackKnob {"Feedback", *audioProcessor.getApvts(), feedbackParamID, true};
     juce::GroupComponent delayGroup, feedbackGroup, outputGroup;
     MainLookAndFeel mainLF;
