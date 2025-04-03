@@ -13,6 +13,7 @@
       <FILE id="E1U0fB" name="Noise.png" compile="0" resource="1" file="Assets/Noise.png"/>
     </GROUP>
     <GROUP id="{A7CE7B1F-0112-CC0C-128D-25E4ED031AE2}" name="Source">
+      <FILE id="Rh2o24" name="DSP.h" compile="0" resource="0" file="Source/DSP.h"/>
       <FILE id="dvSQo5" name="ProtectYourEars.h" compile="0" resource="0"
             file="Source/ProtectYourEars.h"/>
       <FILE id="kdzF3a" name="LookAndFeel.cpp" compile="1" resource="0" file="Source/LookAndFeel.cpp"/>
