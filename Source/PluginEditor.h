@@ -20,7 +20,7 @@ private:
     DelayAudioProcessor& audioProcessor;
     RotaryKnob gainKnob {"Gain", *audioProcessor.getApvts(), gainParamID, true};
     RotaryKnob mixKnob {"Mix", *audioProcessor.getApvts(), mixParamID};
-    RotaryKnob delayTimeLKnob {"Time (L)", *audioProcessor.getApvts(), delayTimeLParamID};
+    RotaryKnob delayTimeLKnob {"Time (L, M)", *audioProcessor.getApvts(), delayTimeLParamID};
     RotaryKnob delayTimeRKnob {"Time (R)", *audioProcessor.getApvts(), delayTimeRParamID};
     RotaryKnob feedbackKnob {"Feedback", *audioProcessor.getApvts(), feedbackParamID, true};
     RotaryKnob stereoKnob {"Stereo", *audioProcessor.getApvts(), stereoParamID, true};
