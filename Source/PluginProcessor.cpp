@@ -18,6 +18,8 @@ DelayAudioProcessor::DelayAudioProcessor()
                        ),
     params(apvts)
 {
+    lowCutFilter.setType(juce::dsp::StateVariableTPTFilterType::highpass);
+    highCutFilter.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
 }
 
 DelayAudioProcessor::~DelayAudioProcessor()
@@ -105,6 +107,12 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
     feedbackL = 0.0f;
     feedbackR = 0.0f;
+
+    lowCutFilter.prepare(spec);
+    lowCutFilter.reset();
+
+    highCutFilter.prepare(spec);
+    highCutFilter.reset();
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -168,6 +176,9 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
             float delayInSamplesR = params.delayTimeR / 1000.0f * sampleRate;
             delayLine.setDelay(std::max(delayInSamplesL, delayInSamplesR));
 
+            lowCutFilter.setCutoffFrequency(params.lowCut);
+            highCutFilter.setCutoffFrequency(params.highCut);
+
             float dryL = inputDataL[sample];
             float dryR = inputDataR[sample];
 
@@ -180,7 +191,12 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
             float wetR = delayLine.popSample(1, delayInSamplesR);
 
             feedbackL = wetL * params.feedback;
+            feedbackL = lowCutFilter.processSample(0, feedbackL);
+            feedbackL = highCutFilter.processSample(0, feedbackL);
+
             feedbackR = wetR * params.feedback;
+            feedbackR = lowCutFilter.processSample(1, feedbackR);
+            feedbackR = highCutFilter.processSample(1, feedbackR);
 
             float mixL = dryL + wetL * params.mix;
             float mixR = dryR + wetR * params.mix;
