@@ -26,6 +26,9 @@ private:
     RotaryKnob stereoKnob {"Stereo", *audioProcessor.getApvts(), stereoParamID, true};
     RotaryKnob lowCutKnob {"Low Cut", *audioProcessor.getApvts(), lowCutParamID};
     RotaryKnob highCutKnob {"High Cut", *audioProcessor.getApvts(), highCutParamID};
+    RotaryKnob lowCutQKnob {"Low Cut Q", *audioProcessor.getApvts(), lowCutQParamID};
+    RotaryKnob highCutQKnob {"High Cut Q", *audioProcessor.getApvts(), highCutQParamID};
+    RotaryKnob driveKnob {"Drive", *audioProcessor.getApvts(), driveParamID};
     juce::GroupComponent delayGroup, feedbackGroup, outputGroup;
     MainLookAndFeel mainLF;
 

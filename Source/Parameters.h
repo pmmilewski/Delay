@@ -19,6 +19,9 @@ const juce::ParameterID feedbackParamID {"feedback", 1};
 const juce::ParameterID stereoParamID {"stereo", 1};
 const juce::ParameterID lowCutParamID {"lowCut", 1};
 const juce::ParameterID highCutParamID {"highCut", 1};
+const juce::ParameterID lowCutQParamID {"lowCutQ", 1};
+const juce::ParameterID highCutQParamID {"highCutQ", 1};
+const juce::ParameterID driveParamID {"drive", 1};
 
 class Parameters
 {
@@ -40,8 +43,11 @@ public:
     float stereo = {0.0f};
     float panL = {0.0f};
     float panR = {1.0f};
-    float lowCut = 20.0f;
-    float highCut = 20000.0f;
+    float lowCut = {20.0f};
+    float highCut = {20000.0f};
+    float lowCutQ = {0.707f};
+    float highCutQ = {0.707f};
+    float drive = {0.0f};
 
 private:
     juce::AudioParameterFloat* gainParam = { nullptr };
@@ -69,6 +75,15 @@ private:
 
     juce::AudioParameterFloat* highCutParam = { nullptr };
     juce::LinearSmoothedValue<float> highCutSmoother = { 0.0f };
+
+    juce::AudioParameterFloat* lowCutQParam = { nullptr };
+    juce::LinearSmoothedValue<float> lowCutQSmoother = { 0.0f };
+
+    juce::AudioParameterFloat* highCutQParam = { nullptr };
+    juce::LinearSmoothedValue<float> highCutQSmoother = { 0.0f };
+
+    juce::AudioParameterFloat* driveParam = { nullptr };
+    juce::LinearSmoothedValue<float> driveSmoother = { 0.0f };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Parameters)
 };

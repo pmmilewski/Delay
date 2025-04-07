@@ -90,6 +90,9 @@ Parameters::Parameters(juce::AudioProcessorValueTreeState& apvts)
   castParameter(apvts, stereoParamID, stereoParam);
   castParameter(apvts, lowCutParamID, lowCutParam);
   castParameter(apvts, highCutParamID, highCutParam);
+  castParameter(apvts, lowCutQParamID, lowCutQParam);
+  castParameter(apvts, highCutQParamID, highCutQParam);
+  castParameter(apvts, driveParamID, driveParam);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout Parameters::createParameterLayout()
@@ -125,7 +128,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::createParameterL
     mixParamID,
     "Mix",
     juce::NormalisableRange<float> {0.0f, 100.0f, 1.0f},
-    100.0f,
+    50.0f,
     juce::AudioParameterFloatAttributes().withStringFromValueFunction(stringFromPercent)
     ));
 
@@ -165,6 +168,28 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::createParameterL
   .withValueFromStringFunction(hzFromString)
   ));
 
+  parameterLayout.add(std::make_unique<juce::AudioParameterFloat>(
+  lowCutQParamID,
+  "Low Cut Q",
+  juce::NormalisableRange<float> {0.5f, 10.0f, 0.1f},
+  0.707f
+  ));
+
+  parameterLayout.add(std::make_unique<juce::AudioParameterFloat>(
+  highCutQParamID,
+  "High Cut Q",
+  juce::NormalisableRange<float> {0.5f, 10.0f, 0.1f},
+  0.707f
+  ));
+  
+  parameterLayout.add(std::make_unique<juce::AudioParameterFloat>(
+  driveParamID,
+  "Drive",
+  juce::NormalisableRange<float> {0.0f, 18.0f},
+  0.0f,
+  juce::AudioParameterFloatAttributes().withStringFromValueFunction(stringFromDecibels)
+  ));
+
   return parameterLayout;
 }
 
@@ -189,6 +214,9 @@ void Parameters::update() noexcept
   stereoSmoother.setTargetValue(stereoParam->get() * 0.01f);
   lowCutSmoother.setTargetValue(lowCutParam->get());
   highCutSmoother.setTargetValue(highCutParam->get());
+  lowCutQSmoother.setTargetValue(lowCutQParam->get());
+  highCutQSmoother.setTargetValue(highCutQParam->get());
+  driveSmoother.setTargetValue(juce::Decibels::decibelsToGain(driveParam->get()));
 }
 
 void Parameters::prepareToPlay(double sampleRate) noexcept
@@ -202,6 +230,9 @@ void Parameters::prepareToPlay(double sampleRate) noexcept
   stereoSmoother.reset(sampleRate, duration);
   lowCutSmoother.reset(sampleRate, duration);
   highCutSmoother.reset(sampleRate, duration);
+  lowCutQSmoother.reset(sampleRate, duration);
+  highCutQSmoother.reset(sampleRate, duration);
+  driveSmoother.reset(sampleRate, duration);
 }
 
 void Parameters::reset() noexcept
@@ -210,7 +241,7 @@ void Parameters::reset() noexcept
   gainSmoother.setCurrentAndTargetValue(juce::Decibels::decibelsToGain(gainParam->get()));
   delayTimeL = 0.0f;
   delayTimeR = 0.0f;
-  mix = 1.0f;
+  mix = 0.5f;
   mixSmoother.setCurrentAndTargetValue(mixParam->get() * 0.01f);
   feedbackSmoother.setCurrentAndTargetValue(feedbackParam->get() * 0.01f);
   stereoSmoother.setCurrentAndTargetValue(stereoParam->get() * 0.01f);
@@ -219,7 +250,13 @@ void Parameters::reset() noexcept
   lowCut = 20.0f;
   lowCutSmoother.setCurrentAndTargetValue(lowCutParam->get());
   highCut = 20000.0f;
-  highCutSmoother.setCurrentAndTargetValue(highCutParam->get());  
+  highCutSmoother.setCurrentAndTargetValue(highCutParam->get());
+  lowCutQ = 0.707f;
+  lowCutQSmoother.setCurrentAndTargetValue(lowCutQParam->get());
+  highCutQ = 0.707f;
+  highCutQSmoother.setCurrentAndTargetValue(highCutQParam->get());
+  drive = 0.0f;
+  driveSmoother.setCurrentAndTargetValue(juce::Decibels::decibelsToGain(driveParam->get()));
 }
 
 void Parameters::smoothen() noexcept
@@ -232,4 +269,7 @@ void Parameters::smoothen() noexcept
   panningEqualPower(stereoSmoother.getNextValue(), panL, panR);
   lowCut = lowCutSmoother.getNextValue();
   highCut = highCutSmoother.getNextValue();
+  lowCutQ = lowCutQSmoother.getNextValue();
+  highCutQ = highCutQSmoother.getNextValue();
+  drive = driveSmoother.getNextValue();
 }

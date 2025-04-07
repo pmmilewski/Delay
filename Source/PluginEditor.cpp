@@ -17,6 +17,9 @@ DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
     feedbackGroup.addAndMakeVisible(stereoKnob);
     feedbackGroup.addAndMakeVisible(lowCutKnob);
     feedbackGroup.addAndMakeVisible(highCutKnob);
+    feedbackGroup.addAndMakeVisible(lowCutQKnob);
+    feedbackGroup.addAndMakeVisible(highCutQKnob);
+    feedbackGroup.addAndMakeVisible(driveKnob);
     addAndMakeVisible(feedbackGroup);
     
 
@@ -31,7 +34,7 @@ DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
 
     setLookAndFeel(&mainLF);
     
-    setSize (500, 340);
+    setSize (500, 560);
 }
 
 DelayAudioProcessorEditor::~DelayAudioProcessorEditor()
@@ -82,4 +85,7 @@ void DelayAudioProcessorEditor::resized()
     stereoKnob.setTopLeftPosition(feedbackKnob.getRight() + 20, feedbackKnob.getY());
     lowCutKnob.setTopLeftPosition(feedbackKnob.getX(), feedbackKnob.getBottom() + 10);
     highCutKnob.setTopLeftPosition(lowCutKnob.getRight() + 20, lowCutKnob.getY());
+    lowCutQKnob.setTopLeftPosition(lowCutKnob.getX(), lowCutKnob.getBottom() + 10);
+    highCutQKnob.setTopLeftPosition(lowCutQKnob.getRight() + 20, lowCutQKnob.getY());
+    driveKnob.setTopLeftPosition(lowCutKnob.getX(), highCutQKnob.getBottom() + 10);
 }
