@@ -20,6 +20,7 @@ DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
     feedbackGroup.addAndMakeVisible(lowCutQKnob);
     feedbackGroup.addAndMakeVisible(highCutQKnob);
     feedbackGroup.addAndMakeVisible(driveKnob);
+    feedbackGroup.addAndMakeVisible(postWSGainKnob);
     addAndMakeVisible(feedbackGroup);
     
 
@@ -88,4 +89,5 @@ void DelayAudioProcessorEditor::resized()
     lowCutQKnob.setTopLeftPosition(lowCutKnob.getX(), lowCutKnob.getBottom() + 10);
     highCutQKnob.setTopLeftPosition(lowCutQKnob.getRight() + 20, lowCutQKnob.getY());
     driveKnob.setTopLeftPosition(lowCutKnob.getX(), highCutQKnob.getBottom() + 10);
+    postWSGainKnob.setTopLeftPosition(driveKnob.getRight() + 20, driveKnob.getY());
 }

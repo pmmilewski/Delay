@@ -93,6 +93,7 @@ Parameters::Parameters(juce::AudioProcessorValueTreeState& apvts)
   castParameter(apvts, lowCutQParamID, lowCutQParam);
   castParameter(apvts, highCutQParamID, highCutQParam);
   castParameter(apvts, driveParamID, driveParam);
+  castParameter(apvts, postWSGainParamID, postWSGainParam);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout Parameters::createParameterLayout()
@@ -184,8 +185,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::createParameterL
   
   parameterLayout.add(std::make_unique<juce::AudioParameterFloat>(
   driveParamID,
-  "Drive",
-  juce::NormalisableRange<float> {0.0f, 18.0f},
+  "Dist Pre-gain",
+  juce::NormalisableRange<float> {-24.0f, 24.0f},
+  0.0f,
+  juce::AudioParameterFloatAttributes().withStringFromValueFunction(stringFromDecibels)
+  ));
+
+  parameterLayout.add(std::make_unique<juce::AudioParameterFloat>(
+  postWSGainParamID,
+  "Dist Post-gain",
+  juce::NormalisableRange<float> {-24.0f, 24.0f},
   0.0f,
   juce::AudioParameterFloatAttributes().withStringFromValueFunction(stringFromDecibels)
   ));
@@ -217,6 +226,7 @@ void Parameters::update() noexcept
   lowCutQSmoother.setTargetValue(lowCutQParam->get());
   highCutQSmoother.setTargetValue(highCutQParam->get());
   driveSmoother.setTargetValue(juce::Decibels::decibelsToGain(driveParam->get()));
+  postWSGainSmoother.setTargetValue(juce::Decibels::decibelsToGain(postWSGainParam->get()));
 }
 
 void Parameters::prepareToPlay(double sampleRate) noexcept
@@ -233,6 +243,7 @@ void Parameters::prepareToPlay(double sampleRate) noexcept
   lowCutQSmoother.reset(sampleRate, duration);
   highCutQSmoother.reset(sampleRate, duration);
   driveSmoother.reset(sampleRate, duration);
+  postWSGainSmoother.reset(sampleRate, duration);
 }
 
 void Parameters::reset() noexcept
@@ -257,6 +268,7 @@ void Parameters::reset() noexcept
   highCutQSmoother.setCurrentAndTargetValue(highCutQParam->get());
   drive = 0.0f;
   driveSmoother.setCurrentAndTargetValue(juce::Decibels::decibelsToGain(driveParam->get()));
+  postWSGainSmoother.setCurrentAndTargetValue(juce::Decibels::decibelsToGain(postWSGainParam->get()));
 }
 
 void Parameters::smoothen() noexcept
@@ -272,4 +284,5 @@ void Parameters::smoothen() noexcept
   lowCutQ = lowCutQSmoother.getNextValue();
   highCutQ = highCutQSmoother.getNextValue();
   drive = driveSmoother.getNextValue();
+  postWSGain = postWSGainSmoother.getNextValue();
 }

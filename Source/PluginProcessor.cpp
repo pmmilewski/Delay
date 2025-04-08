@@ -223,12 +223,12 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
 
             feedbackL = wetL * params.feedback;
             feedbackL = lowCutFilter.processSample(0, feedbackL);
-            feedbackL = distortionWaveShaper.processSample(params.drive * feedbackL);
+            feedbackL = distortionWaveShaper.processSample(params.drive * feedbackL) * params.postWSGain;
             feedbackL = highCutFilter.processSample(0, feedbackL);
 
             feedbackR = wetR * params.feedback;
             feedbackR = lowCutFilter.processSample(1, feedbackR);
-            feedbackR = distortionWaveShaper.processSample(params.drive * feedbackR);
+            feedbackR = distortionWaveShaper.processSample(params.drive * feedbackR) * params.postWSGain;
             feedbackR = highCutFilter.processSample(1, feedbackR);
 
             float mixL = (1.0f - params.mix) * dryL + wetL * params.mix;

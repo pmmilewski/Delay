@@ -22,6 +22,7 @@ const juce::ParameterID highCutParamID {"highCut", 1};
 const juce::ParameterID lowCutQParamID {"lowCutQ", 1};
 const juce::ParameterID highCutQParamID {"highCutQ", 1};
 const juce::ParameterID driveParamID {"drive", 1};
+const juce::ParameterID postWSGainParamID {"postWSGain", 1};
 
 class Parameters
 {
@@ -48,6 +49,7 @@ public:
     float lowCutQ = {0.707f};
     float highCutQ = {0.707f};
     float drive = {0.0f};
+    float postWSGain = {0.0f};
 
 private:
     juce::AudioParameterFloat* gainParam = { nullptr };
@@ -84,6 +86,9 @@ private:
 
     juce::AudioParameterFloat* driveParam = { nullptr };
     juce::LinearSmoothedValue<float> driveSmoother = { 0.0f };
+
+    juce::AudioParameterFloat* postWSGainParam = { nullptr };
+    juce::LinearSmoothedValue<float> postWSGainSmoother = { 0.0f };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Parameters)
 };
