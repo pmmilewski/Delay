@@ -30,6 +30,13 @@ private:
     RotaryKnob highCutQKnob {"High Cut Q", *audioProcessor.getApvts(), highCutQParamID};
     RotaryKnob driveKnob {"Dist Pre-Gain", *audioProcessor.getApvts(), driveParamID, true};
     RotaryKnob postWSGainKnob {"Dist Post-Gain", *audioProcessor.getApvts(), postWSGainParamID, true};
+    RotaryKnob delayNoteKnob {"Note", *audioProcessor.getApvts(), delayNoteParamID };
+
+    juce::TextButton tempoSyncButton;
+    juce::AudioProcessorValueTreeState::ButtonAttachment tempoSyncAttachment {
+       *audioProcessor.getApvts(), tempoSyncParamID.getParamID(), tempoSyncButton
+    };
+    
     juce::GroupComponent delayGroup, feedbackGroup, outputGroup;
     MainLookAndFeel mainLF;
 

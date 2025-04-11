@@ -9,6 +9,7 @@ DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
     delayGroup.setTextLabelPosition(juce::Justification::horizontallyCentred);
     delayGroup.addAndMakeVisible(delayTimeLKnob);
     delayGroup.addAndMakeVisible(delayTimeRKnob);
+    delayGroup.addAndMakeVisible(delayNoteKnob);
     addAndMakeVisible(delayGroup);
 
     feedbackGroup.setText("Feedback");
@@ -32,6 +33,11 @@ DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
 
     // way to set separate colors to individual knobs
     //gainKnob.slider.setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::green);
+    tempoSyncButton.setButtonText("Sync");
+    tempoSyncButton.setClickingTogglesState(true);
+    tempoSyncButton.setBounds(0, 0, 70, 27);
+    tempoSyncButton.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
+    delayGroup.addAndMakeVisible(tempoSyncButton);
 
     setLookAndFeel(&mainLF);
     
@@ -80,6 +86,9 @@ void DelayAudioProcessorEditor::resized()
     // positioning knobs in groups
     delayTimeLKnob.setTopLeftPosition(20, 20);
     delayTimeRKnob.setTopLeftPosition(delayTimeLKnob.getX(), delayTimeLKnob.getBottom() + 10);
+    tempoSyncButton.setTopLeftPosition(20, delayTimeRKnob.getBottom() + 10);
+    delayNoteKnob.setTopLeftPosition(20, tempoSyncButton.getBottom() - 5);
+    
     mixKnob.setTopLeftPosition(20, 20);
     gainKnob.setTopLeftPosition(mixKnob.getX(), mixKnob.getBottom() + 10);
     feedbackKnob.setTopLeftPosition(20, 20);
