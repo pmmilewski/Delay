@@ -7,6 +7,8 @@
 */
 
 #include "PluginProcessor.h"
+
+#include <algorithm>
 #include "PluginEditor.h"
 #include "ProtectYourEars.h"
 
@@ -123,6 +125,8 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
     distortionWaveShaper.prepare(spec);
     distortionWaveShaper.reset();
+
+    tempo.reset();
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -161,6 +165,12 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
     }
 
     params.update();
+    tempo.update(getPlayHead());
+
+    float syncedTimeL = static_cast<float>(tempo.getMillisecondsForNoteLength(params.delayNoteL));
+    syncedTimeL = std::min(syncedTimeL, Parameters::maxDelayTime);
+    float syncedTimeR = static_cast<float>(tempo.getMillisecondsForNoteLength(params.delayNoteR));
+    syncedTimeR = std::min(syncedTimeR, Parameters::maxDelayTime);
 
     float sampleRate = static_cast<float>(getSampleRate());
 
@@ -182,8 +192,11 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
         {
             params.smoothen();
 
-            float delayInSamplesL = params.delayTimeL / 1000.0f * sampleRate;
-            float delayInSamplesR = params.delayTimeR / 1000.0f * sampleRate;
+            float delayTimeL = params.tempoSync? syncedTimeL : params.delayTimeL;
+            float delayTimeR = params.tempoSync? syncedTimeR : params.delayTimeR;
+            
+            float delayInSamplesL = delayTimeL / 1000.0f * sampleRate;
+            float delayInSamplesR = delayTimeR / 1000.0f * sampleRate;
             delayLine.setDelay(std::max(delayInSamplesL, delayInSamplesR));
 
             if (params.lowCut != lastLowCut)

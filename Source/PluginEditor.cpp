@@ -9,7 +9,8 @@ DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
     delayGroup.setTextLabelPosition(juce::Justification::horizontallyCentred);
     delayGroup.addAndMakeVisible(delayTimeLKnob);
     delayGroup.addAndMakeVisible(delayTimeRKnob);
-    delayGroup.addAndMakeVisible(delayNoteKnob);
+    delayGroup.addChildComponent(delayNoteLKnob);
+    delayGroup.addChildComponent(delayNoteRKnob);
     addAndMakeVisible(delayGroup);
 
     feedbackGroup.setText("Feedback");
@@ -36,16 +37,20 @@ DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
     tempoSyncButton.setButtonText("Sync");
     tempoSyncButton.setClickingTogglesState(true);
     tempoSyncButton.setBounds(0, 0, 70, 27);
-    tempoSyncButton.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
+    tempoSyncButton.setLookAndFeel(ButtonLookAndFeel::get());
     delayGroup.addAndMakeVisible(tempoSyncButton);
 
     setLookAndFeel(&mainLF);
     
     setSize (500, 560);
+
+    updateDelayKnobs(audioProcessor.getParams()->getTempoSyncParam()->get());
+    audioProcessor.getParams()->getTempoSyncParam()->addListener(this);
 }
 
 DelayAudioProcessorEditor::~DelayAudioProcessorEditor()
 {
+    audioProcessor.getParams()->getTempoSyncParam()->removeListener(this);
     setLookAndFeel(nullptr);
 }
 
@@ -87,7 +92,8 @@ void DelayAudioProcessorEditor::resized()
     delayTimeLKnob.setTopLeftPosition(20, 20);
     delayTimeRKnob.setTopLeftPosition(delayTimeLKnob.getX(), delayTimeLKnob.getBottom() + 10);
     tempoSyncButton.setTopLeftPosition(20, delayTimeRKnob.getBottom() + 10);
-    delayNoteKnob.setTopLeftPosition(20, tempoSyncButton.getBottom() - 5);
+    delayNoteLKnob.setTopLeftPosition(delayTimeLKnob.getX(), delayTimeLKnob.getY());
+    delayNoteRKnob.setTopLeftPosition(delayTimeRKnob.getX(), delayTimeRKnob.getY());
     
     mixKnob.setTopLeftPosition(20, 20);
     gainKnob.setTopLeftPosition(mixKnob.getX(), mixKnob.getBottom() + 10);
@@ -99,4 +105,29 @@ void DelayAudioProcessorEditor::resized()
     highCutQKnob.setTopLeftPosition(lowCutQKnob.getRight() + 20, lowCutQKnob.getY());
     driveKnob.setTopLeftPosition(lowCutKnob.getX(), highCutQKnob.getBottom() + 10);
     postWSGainKnob.setTopLeftPosition(driveKnob.getRight() + 20, driveKnob.getY());
+}
+
+void DelayAudioProcessorEditor::parameterValueChanged(int, float value)
+{
+    if (juce::MessageManager::getInstance()->isThisTheMessageThread())
+    {
+        updateDelayKnobs(value != 0.0f);
+    }
+    else
+    {
+        juce::MessageManager::callAsync(
+            [this,value]
+            {
+                updateDelayKnobs(value != 0.0f);
+            });
+    }
+}
+
+void DelayAudioProcessorEditor::updateDelayKnobs(bool tempoSyncActive)
+{
+    delayTimeLKnob.setVisible(!tempoSyncActive);
+    delayTimeRKnob.setVisible(!tempoSyncActive);
+
+    delayNoteLKnob.setVisible(tempoSyncActive);
+    delayNoteRKnob.setVisible(tempoSyncActive);
 }

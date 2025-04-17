@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "Parameters.h"
+#include "Tempo.h"
 
 //==============================================================================
 /**
@@ -55,6 +56,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     auto getApvts() {return &apvts;}
+    auto getParams() {return &params;}
 
 private:
     juce::AudioProcessorValueTreeState apvts { *this, nullptr, "Parameters", Parameters::createParameterLayout() };
@@ -69,6 +71,7 @@ private:
     float lastHighCut = -1.0f;
     float lastLowCutQ = -1.0f;
     float lastHighCutQ = -1.0f;
+    Tempo tempo;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessor)
 };

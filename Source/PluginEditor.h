@@ -7,7 +7,7 @@
 #include "RotaryKnob.h"
 #include "LookAndFeel.h"
 
-class DelayAudioProcessorEditor  : public juce::AudioProcessorEditor
+class DelayAudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::AudioProcessorParameter::Listener
 {
 public:
     DelayAudioProcessorEditor (DelayAudioProcessor&);
@@ -17,6 +17,10 @@ public:
     void resized() override;
 
 private:
+    void parameterValueChanged(int, float value) override;
+    void parameterGestureChanged(int, bool) override { }
+    void updateDelayKnobs(bool tempoSyncActive);
+    
     DelayAudioProcessor& audioProcessor;
     RotaryKnob gainKnob {"Gain", *audioProcessor.getApvts(), gainParamID, true};
     RotaryKnob mixKnob {"Mix", *audioProcessor.getApvts(), mixParamID};
@@ -30,7 +34,8 @@ private:
     RotaryKnob highCutQKnob {"High Cut Q", *audioProcessor.getApvts(), highCutQParamID};
     RotaryKnob driveKnob {"Dist Pre-Gain", *audioProcessor.getApvts(), driveParamID, true};
     RotaryKnob postWSGainKnob {"Dist Post-Gain", *audioProcessor.getApvts(), postWSGainParamID, true};
-    RotaryKnob delayNoteKnob {"Note", *audioProcessor.getApvts(), delayNoteParamID };
+    RotaryKnob delayNoteLKnob {"Note (L, M)", *audioProcessor.getApvts(), delayNoteLParamID };
+    RotaryKnob delayNoteRKnob {"Note (R)", *audioProcessor.getApvts(), delayNoteRParamID };
 
     juce::TextButton tempoSyncButton;
     juce::AudioProcessorValueTreeState::ButtonAttachment tempoSyncAttachment {

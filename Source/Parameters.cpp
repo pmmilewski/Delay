@@ -94,7 +94,8 @@ Parameters::Parameters(juce::AudioProcessorValueTreeState& apvts)
   castParameter(apvts, highCutQParamID, highCutQParam);
   castParameter(apvts, driveParamID, driveParam);
   castParameter(apvts, postWSGainParamID, postWSGainParam);
-  castParameter(apvts, delayNoteParamID, delayNoteParam);
+  castParameter(apvts, delayNoteLParamID, delayNoteLParam);
+  castParameter(apvts, delayNoteRParamID, delayNoteRParam);
   castParameter(apvts, tempoSyncParamID, tempoSyncParam);
 }
 
@@ -224,7 +225,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout Parameters::createParameterL
   };
 
   parameterLayout.add(std::make_unique<juce::AudioParameterChoice>(
-    delayNoteParamID, "Delay Note", noteLengths, 9));
+    delayNoteLParamID, "Delay Note (L)", noteLengths, 9));
+
+  parameterLayout.add(std::make_unique<juce::AudioParameterChoice>(
+  delayNoteRParamID, "Delay Note (R)", noteLengths, 9));
 
   return parameterLayout;
 }
@@ -254,7 +258,8 @@ void Parameters::update() noexcept
   highCutQSmoother.setTargetValue(highCutQParam->get());
   driveSmoother.setTargetValue(juce::Decibels::decibelsToGain(driveParam->get()));
   postWSGainSmoother.setTargetValue(juce::Decibels::decibelsToGain(postWSGainParam->get()));
-  delayNote = delayNoteParam->getIndex();
+  delayNoteL = delayNoteLParam->getIndex();
+  delayNoteR = delayNoteRParam->getIndex();
   tempoSync = tempoSyncParam->get();
 }
 
