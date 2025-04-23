@@ -80,16 +80,16 @@ int DelayAudioProcessor::getCurrentProgram()
     return 0;
 }
 
-void DelayAudioProcessor::setCurrentProgram (int index)
+void DelayAudioProcessor::setCurrentProgram ([[maybe_unused]] int index)
 {
 }
 
-const juce::String DelayAudioProcessor::getProgramName (int index)
+const juce::String DelayAudioProcessor::getProgramName ([[maybe_unused]] int index)
 {
     return {};
 }
 
-void DelayAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void DelayAudioProcessor::changeProgramName ([[maybe_unused]] int index, [[maybe_unused]] const juce::String& newName)
 {
 }
 
@@ -103,12 +103,13 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = static_cast<juce::uint32>(samplesPerBlock);
     spec.numChannels = 2;
-    delayLine.prepare(spec);
 
     double numSamples = Parameters::maxDelayTime / 1000.0 * sampleRate;
     int maxDelayInSamples = static_cast<int>(std::ceil(numSamples));
-    delayLine.setMaximumDelayInSamples(maxDelayInSamples);
-    delayLine.reset();
+    delayLineL.setMaximumDelayInSamples(maxDelayInSamples);
+    delayLineR.setMaximumDelayInSamples(maxDelayInSamples);
+    delayLineL.reset();
+    delayLineR.reset();
 
     feedbackL = 0.0f;
     feedbackR = 0.0f;
@@ -197,7 +198,6 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
             
             float delayInSamplesL = delayTimeL / 1000.0f * sampleRate;
             float delayInSamplesR = delayTimeR / 1000.0f * sampleRate;
-            delayLine.setDelay(std::max(delayInSamplesL, delayInSamplesR));
 
             if (params.lowCut != lastLowCut)
             {
@@ -228,11 +228,11 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
 
             float mono = (dryL + dryR) * 0.5f;
 
-            delayLine.pushSample(0, mono*params.panL + feedbackR);
-            delayLine.pushSample(1, mono*params.panR + feedbackL);
+            delayLineL.write(mono*params.panL + feedbackR);
+            delayLineR.write(mono*params.panR + feedbackL);
 
-            float wetL = delayLine.popSample(0, delayInSamplesL);
-            float wetR = delayLine.popSample(1, delayInSamplesR);
+            float wetL = delayLineL.read(delayInSamplesL);
+            float wetR = delayLineR.read(delayInSamplesR);
 
             feedbackL = wetL * params.feedback;
             feedbackL = lowCutFilter.processSample(0, feedbackL);
@@ -258,12 +258,11 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
             params.smoothen();
 
             float delayInSamples = params.delayTimeL / 1000.0f * sampleRate;
-            delayLine.setDelay(delayInSamples);
             
             float dry = inputDataL[sample];
-            delayLine.pushSample(0, dry + feedbackL);
+            delayLineL.write(dry + feedbackL);
 
-            float wet = delayLine.popSample(0);
+            float wet = delayLineL.read(delayInSamples);
             feedbackL = wet * params.feedback;
 
             float mix = (1.0f - params.mix) * dry + wet * params.mix;

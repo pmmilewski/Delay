@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "DelayLine.h"
 #include "Parameters.h"
 #include "Tempo.h"
 
@@ -61,7 +62,7 @@ public:
 private:
     juce::AudioProcessorValueTreeState apvts { *this, nullptr, "Parameters", Parameters::createParameterLayout() };
     Parameters params;
-    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> delayLine;
+    DelayLine delayLineL, delayLineR;
     float feedbackL = 0.0f;
     float feedbackR = 0.0f;
     juce::dsp::StateVariableTPTFilter<float> lowCutFilter;
