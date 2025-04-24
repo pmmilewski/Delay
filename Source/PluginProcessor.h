@@ -59,6 +59,8 @@ public:
     auto getApvts() {return &apvts;}
     auto getParams() {return &params;}
 
+    std::atomic<float> levelL, levelR;
+
 private:
     juce::AudioProcessorValueTreeState apvts { *this, nullptr, "Parameters", Parameters::createParameterLayout() };
     Parameters params;
