@@ -3,7 +3,7 @@
 
 
 DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p), meter(p.levelL, p.levelR)
 {
     delayGroup.setText("Delay");
     delayGroup.setTextLabelPosition(juce::Justification::horizontallyCentred);
@@ -30,6 +30,7 @@ DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
     outputGroup.setTextLabelPosition(juce::Justification::horizontallyCentred);
     outputGroup.addAndMakeVisible(gainKnob);
     outputGroup.addAndMakeVisible(mixKnob);
+    outputGroup.addAndMakeVisible(meter);
     addAndMakeVisible(outputGroup);
 
     // way to set separate colors to individual knobs
@@ -105,6 +106,7 @@ void DelayAudioProcessorEditor::resized()
     highCutQKnob.setTopLeftPosition(lowCutQKnob.getRight() + 20, lowCutQKnob.getY());
     driveKnob.setTopLeftPosition(lowCutKnob.getX(), highCutQKnob.getBottom() + 10);
     postWSGainKnob.setTopLeftPosition(driveKnob.getRight() + 20, driveKnob.getY());
+    meter.setBounds(outputGroup.getWidth() - 45, 30, 30, gainKnob.getBottom() - 30);
 }
 
 void DelayAudioProcessorEditor::parameterValueChanged(int, float value)

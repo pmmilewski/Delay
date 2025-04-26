@@ -6,6 +6,7 @@
 #include "Parameters.h"
 #include "RotaryKnob.h"
 #include "LookAndFeel.h"
+#include "LevelMeter.h"
 
 class DelayAudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::AudioProcessorParameter::Listener
 {
@@ -36,6 +37,7 @@ private:
     RotaryKnob postWSGainKnob {"Dist Post-Gain", *audioProcessor.getApvts(), postWSGainParamID, true};
     RotaryKnob delayNoteLKnob {"Note (L, M)", *audioProcessor.getApvts(), delayNoteLParamID };
     RotaryKnob delayNoteRKnob {"Note (R)", *audioProcessor.getApvts(), delayNoteRParamID };
+    LevelMeter meter;
 
     juce::TextButton tempoSyncButton;
     juce::AudioProcessorValueTreeState::ButtonAttachment tempoSyncAttachment {

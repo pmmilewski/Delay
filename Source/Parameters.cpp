@@ -267,8 +267,8 @@ void Parameters::prepareToPlay(double sampleRate) noexcept
 {
   double duration = 0.02;
   gainSmoother.reset(sampleRate, duration);
-  coeffL = 1.0f - std::exp(-1.0f / (0.2f * static_cast<float>(sampleRate)));
-  coeffR = 1.0f - std::exp(-1.0f / (0.2f * static_cast<float>(sampleRate)));
+  coeffL = 1.0f - std::exp(-1.0f / (0.2f * static_cast<float>(sampleRate))); // 0.2f -> decay time 200 ms
+  coeffR = 1.0f - std::exp(-1.0f / (0.2f * static_cast<float>(sampleRate))); // 0.2f -> decay time 200 ms
   mixSmoother.reset(sampleRate, duration);
   feedbackSmoother.reset(sampleRate, duration);
   stereoSmoother.reset(sampleRate, duration);

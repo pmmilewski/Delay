@@ -260,7 +260,7 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
             outputDataR[sample] = outR;
 
             maxL = std::max(maxL, std::abs(outL));
-            maxL = std::max(maxR, std::abs(outR));
+            maxR = std::max(maxR, std::abs(outR));
         }
     }
     else
@@ -282,6 +282,7 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
             float outL = mix * params.gain;
             outputDataL[sample] = outL;
             maxL = std::max(maxL, std::abs(outL));
+            maxR = std::max(maxL, std::abs(outL));
         }
     }
 

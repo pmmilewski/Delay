@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(Delay VERSION 0.0.1 LANGUAGES C CXX)
+project(Delay VERSION 1.0.0 LANGUAGES C CXX)
 
 # If you've installed JUCE somehow (via a package manager, or directly using the CMake install
 # target), you'll need to tell this project that it depends on the installed copy of JUCE. If you've
