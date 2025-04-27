@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
@@ -13,6 +5,7 @@
 #include "Parameters.h"
 #include "Tempo.h"
 #include "Measurement.h"
+#include "Defines.h"
 
 //==============================================================================
 /**
@@ -76,6 +69,17 @@ private:
     float lastLowCutQ = -1.0f;
     float lastHighCutQ = -1.0f;
     Tempo tempo;
+
+#if CROSSFADE
+    float delayInSamplesL = 0.0f;
+    float delayInSamplesR = 0.0f;
+    float targetDelayL = 0.0f;
+    float targetDelayR = 0.0f;
+    float xfadeL = 0.0f;
+    float xfadeR = 0.0f;
+    float xfadeInc = 0.0f;
+#endif
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessor)
 };

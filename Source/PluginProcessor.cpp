@@ -131,6 +131,16 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
     levelL.reset();
     levelR.reset();
+
+#if CROSSFADE
+    delayInSamplesL = 0.0f;
+    delayInSamplesR = 0.0f;
+    targetDelayL = 0.0f;
+    targetDelayR = 0.0f;
+    xfadeL = 0.0f;
+    xfadeR = 0.0f;
+    xfadeInc = static_cast<float>(1.0 / (0.05 * sampleRate)); // 50 ms
+#endif
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -199,11 +209,43 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
         {
             params.smoothen();
 
-            float delayTimeL = params.tempoSync? syncedTimeL : params.delayTimeL;
-            float delayTimeR = params.tempoSync? syncedTimeR : params.delayTimeR;
-            
+#if CROSSFADE
+            if (xfadeL == 0.0f)
+            {
+                float delayTimeL = params.tempoSync ? syncedTimeL : params.delayTimeL;
+                targetDelayL = delayTimeL / 1000.0f * sampleRate;
+
+                if (delayInSamplesL == 0.0f)
+                {
+                    delayInSamplesL = targetDelayL;
+                }
+                else if (targetDelayL != delayInSamplesL)
+                {
+                    xfadeL = xfadeInc;
+                }
+            }
+
+            if (xfadeR == 0.0f)
+            {
+                float delayTimeR = params.tempoSync ? syncedTimeR : params.delayTimeR;
+                targetDelayR = delayTimeR / 1000.0f * sampleRate;
+
+                if (delayInSamplesR == 0.0f)
+                {
+                    delayInSamplesR = targetDelayR;
+                }
+                else if (targetDelayR != delayInSamplesR)
+                {
+                    xfadeR = xfadeInc;
+                }
+            }
+#else
+            float delayTimeL = params.tempoSync ? syncedTimeL : params.delayTimeL;
             float delayInSamplesL = delayTimeL / 1000.0f * sampleRate;
-            float delayInSamplesR = delayTimeR / 1000.0f * sampleRate;
+
+            float delayTimeR = params.tempoSync ? syncedTimeR : params.delayTimeR;
+            float delayInSamplesR = delayTimeR / 1000.0f * sampleRate; 
+#endif
 
             if (params.lowCut != lastLowCut)
             {
@@ -239,6 +281,36 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
 
             float wetL = delayLineL.read(delayInSamplesL);
             float wetR = delayLineR.read(delayInSamplesR);
+
+#if CROSSFADE
+            if (xfadeL > 0.0f)
+            {
+                float newL = delayLineL.read(targetDelayL);
+
+                wetL = (1.0f - xfadeL) * wetL + xfadeL * newL;
+
+                xfadeL += xfadeInc;
+                if (xfadeL >= 1.0f)
+                {
+                    delayInSamplesL = targetDelayL;
+                    xfadeL = 0.0f;
+                }
+            }
+
+            if (xfadeR > 0.0f)
+            {
+                float newR = delayLineR.read(targetDelayR);
+
+                wetR = (1.0f - xfadeR) * wetR + xfadeR * newR;
+
+                xfadeR += xfadeInc;
+                if (xfadeR >= 1.0f)
+                {
+                    delayInSamplesR = targetDelayR;
+                    xfadeR = 0.0f;
+                }
+            }
+#endif
 
             feedbackL = wetL * params.feedback;
             feedbackL = lowCutFilter.processSample(0, feedbackL);

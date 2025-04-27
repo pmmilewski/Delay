@@ -1,5 +1,6 @@
 #include "Parameters.h"
 #include "DSP.h"
+#include "Defines.h"
 
 template<typename T>
 static void castParameter(juce::AudioProcessorValueTreeState& apvts,
@@ -308,8 +309,13 @@ void Parameters::reset() noexcept
 void Parameters::smoothen() noexcept
 {
   gain = gainSmoother.getNextValue();
+#if CROSSFADE
+  delayTimeL = targetDelayTimeL;
+  delayTimeR = targetDelayTimeR;
+#else
   delayTimeL += (targetDelayTimeL - delayTimeL) * coeffL;
   delayTimeR += (targetDelayTimeR - delayTimeR) * coeffR;
+#endif
   mix = mixSmoother.getNextValue();
   feedback = feedbackSmoother.getNextValue();
   panningEqualPower(stereoSmoother.getNextValue(), panL, panR);

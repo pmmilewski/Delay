@@ -24,5 +24,6 @@ target_sources(${PROJECT_NAME}
 		Tempo.cpp
 		Tempo.h
 		Measurement.h
+		Defines.h
         )
 
