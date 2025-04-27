@@ -23,5 +23,6 @@ target_sources(${PROJECT_NAME}
         RotaryKnob.h
 		Tempo.cpp
 		Tempo.h
+		Measurement.h
         )
 

@@ -12,6 +12,7 @@
 #include "DelayLine.h"
 #include "Parameters.h"
 #include "Tempo.h"
+#include "Measurement.h"
 
 //==============================================================================
 /**
@@ -59,7 +60,7 @@ public:
     auto getApvts() {return &apvts;}
     auto getParams() {return &params;}
 
-    std::atomic<float> levelL, levelR;
+    Measurement levelL, levelR;
 
 private:
     juce::AudioProcessorValueTreeState apvts { *this, nullptr, "Parameters", Parameters::createParameterLayout() };

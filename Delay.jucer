@@ -13,6 +13,7 @@
       <FILE id="E1U0fB" name="Noise.png" compile="0" resource="1" file="Assets/Noise.png"/>
     </GROUP>
     <GROUP id="{A7CE7B1F-0112-CC0C-128D-25E4ED031AE2}" name="Source">
+      <FILE id="aIadmd" name="Measurement.h" compile="0" resource="0" file="Source/Measurement.h"/>
       <FILE id="q8HTDS" name="LevelMeter.cpp" compile="1" resource="0" file="Source/LevelMeter.cpp"/>
       <FILE id="gLLwSb" name="LevelMeter.h" compile="0" resource="0" file="Source/LevelMeter.h"/>
       <FILE id="MkgLME" name="DelayLine.cpp" compile="1" resource="0" file="Source/DelayLine.cpp"/>
