@@ -141,6 +141,21 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     xfadeR = 0.0f;
     xfadeInc = static_cast<float>(1.0 / (0.05 * sampleRate)); // 50 ms
 #endif
+#if DUCKING
+    delayInSamplesL = 0.0f;
+    delayInSamplesR = 0.0f;
+
+    fadeL = 1.0f;
+    fadeTargetL = 1.0f;
+    waitL = 0.0f;
+
+    fadeR = 1.0f;
+    fadeTargetR = 1.0f;
+    waitR = 0.0f;
+
+    waitInc = 1.0f / (0.3f * static_cast<float>(sampleRate)); // 300 ms
+    coeff = 1.0f - std::exp(-1.0f / (0.05f * static_cast<float>(sampleRate))); // 50 ms to 63.2%
+#endif
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -239,6 +254,42 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
                     xfadeR = xfadeInc;
                 }
             }
+#elif DUCKING
+            float delayTimeL = params.tempoSync ? syncedTimeL : params.delayTimeL;
+            float newTargetDelayL = delayTimeL / 1000.0f * sampleRate;
+
+            if (newTargetDelayL != targetDelayL)
+            {
+                targetDelayL = newTargetDelayL;
+
+                if (delayInSamplesL == 0.0f)
+                {
+                    delayInSamplesL = targetDelayL;
+                }
+                else
+                {
+                    waitL = waitInc;
+                    fadeTargetL = 0.0f;
+                }
+            }
+
+            float delayTimeR = params.tempoSync ? syncedTimeR : params.delayTimeR;
+            float newTargetDelayR = delayTimeR / 1000.0f * sampleRate;
+
+            if (newTargetDelayR != targetDelayR)
+            {
+                targetDelayR = newTargetDelayR;
+
+                if (delayInSamplesR == 0.0f)
+                {
+                    delayInSamplesR = targetDelayR;
+                }
+                else
+                {
+                    waitR = waitInc;
+                    fadeTargetR = 0.0f;
+                }
+            }
 #else
             float delayTimeL = params.tempoSync ? syncedTimeL : params.delayTimeL;
             float delayInSamplesL = delayTimeL / 1000.0f * sampleRate;
@@ -311,6 +362,37 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
                 }
             }
 #endif
+#if DUCKING
+            fadeL += (fadeTargetL - fadeL) * coeff;
+
+            wetL *= fadeL;
+
+            if (waitL > 0.0f)
+            {
+                waitL += waitInc;
+                if (waitL >= 1.0f)
+                {
+                    delayInSamplesL = targetDelayL;
+                    waitL = 0.0f;
+                    fadeTargetL = 1.0f; // fade in
+                }
+            }
+
+            fadeR += (fadeTargetR - fadeR) * coeff;
+
+            wetR *= fadeR;
+
+            if (waitR > 0.0f)
+            {
+                waitR += waitInc;
+                if (waitR >= 1.0f)
+                {
+                    delayInSamplesR = targetDelayR;
+                    waitR = 0.0f;
+                    fadeTargetR = 1.0f; // fade in
+                }
+            }
+#endif
 
             feedbackL = wetL * params.feedback;
             feedbackL = lowCutFilter.processSample(0, feedbackL);
@@ -327,7 +409,7 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
 
             float outL = mixL * params.gain;
             float outR = mixR * params.gain;
-            
+
             outputDataL[sample] = outL;
             outputDataR[sample] = outR;
 

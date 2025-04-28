@@ -79,6 +79,23 @@ private:
     float xfadeR = 0.0f;
     float xfadeInc = 0.0f;
 #endif
+#if DUCKING
+    float delayInSamplesL = 0.0f;
+    float delayInSamplesR = 0.0f;
+    float targetDelayL = 0.0f;
+    float targetDelayR = 0.0f;
+
+    float fadeL = 0.0f;
+    float fadeTargetL = 0.0f;
+    float waitL = 0.0f;
+
+    float fadeR = 0.0f;
+    float fadeTargetR = 0.0f;
+    float waitR = 0.0f;
+
+    float waitInc = 0.0f;
+    float coeff = 0.0f;
+#endif
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessor)

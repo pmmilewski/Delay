@@ -309,9 +309,10 @@ void Parameters::reset() noexcept
 void Parameters::smoothen() noexcept
 {
   gain = gainSmoother.getNextValue();
-#if CROSSFADE
+#if CROSSFADE | DUCKING
   delayTimeL = targetDelayTimeL;
   delayTimeR = targetDelayTimeR;
+
 #else
   delayTimeL += (targetDelayTimeL - delayTimeL) * coeffL;
   delayTimeR += (targetDelayTimeR - delayTimeR) * coeffR;
