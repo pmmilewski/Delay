@@ -43,6 +43,11 @@ private:
     juce::AudioProcessorValueTreeState::ButtonAttachment tempoSyncAttachment {
        *audioProcessor.getApvts(), tempoSyncParamID.getParamID(), tempoSyncButton
     };
+
+    juce::ImageButton bypassButton;
+    juce::AudioProcessorValueTreeState::ButtonAttachment bypassAttachment {
+        *audioProcessor.getApvts(), bypassParamID.getParamID(), bypassButton
+    };
     
     juce::GroupComponent delayGroup, feedbackGroup, outputGroup;
     MainLookAndFeel mainLF;

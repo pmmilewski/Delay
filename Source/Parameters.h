@@ -26,6 +26,7 @@ const juce::ParameterID postWSGainParamID {"postWSGain", 1};
 const juce::ParameterID tempoSyncParamID { "tempoSync", 1};
 const juce::ParameterID delayNoteLParamID { "delayNoteL", 1};
 const juce::ParameterID delayNoteRParamID { "delayNoteR", 1};
+const juce::ParameterID bypassParamID {"bypass", 1};
 
 class Parameters
 {
@@ -56,6 +57,9 @@ public:
     int delayNoteL = 0;
     int delayNoteR = 0;
     bool tempoSync = false;
+    bool bypassed = false;
+
+    juce::AudioParameterBool* bypassParam;
 
     auto getTempoSyncParam() const noexcept {return tempoSyncParam;}
 

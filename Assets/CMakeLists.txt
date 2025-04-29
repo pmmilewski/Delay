@@ -9,4 +9,6 @@ juce_add_binary_data(Assets
         SOURCES
         Logo.png
         Noise.png
-        Lato-Medium.ttf)
+        Lato-Medium.ttf
+        Bypass.png
+)

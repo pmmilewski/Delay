@@ -52,6 +52,7 @@ public:
 
     auto getApvts() {return &apvts;}
     auto getParams() {return &params;}
+    juce::AudioProcessorParameter* getBypassParameter() const override;
 
     Measurement levelL, levelR;
 
@@ -95,6 +96,10 @@ private:
 
     float waitInc = 0.0f;
     float coeff = 0.0f;
+
+    bool lastBypass = false;
+    float bypassXfade = 0.0f;
+    float bypassXfadeInc = 0.0f;
 #endif
 
     //==============================================================================

@@ -156,6 +156,9 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     waitInc = 1.0f / (0.3f * static_cast<float>(sampleRate)); // 300 ms
     coeff = 1.0f - std::exp(-1.0f / (0.05f * static_cast<float>(sampleRate))); // 50 ms to 63.2%
 #endif
+    lastBypass = false;
+    bypassXfade = 0.0f;
+    bypassXfadeInc = static_cast<float>(1.0 / (0.05 * sampleRate)); // 50 ms
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -407,8 +410,51 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
             float mixL = (1.0f - params.mix) * dryL + wetL * params.mix;
             float mixR = (1.0f - params.mix) * dryR + wetR * params.mix;
 
-            float outL = mixL * params.gain;
-            float outR = mixR * params.gain;
+            float postGainL = mixL * params.gain;
+            float postGainR = mixR * params.gain;
+
+            float outL = postGainL;
+            float outR = postGainR;
+
+            if (params.bypassed != lastBypass)
+            {
+                lastBypass = params.bypassed;
+                bypassXfade = bypassXfadeInc;
+            }
+
+            if (params.bypassed)
+            {
+                if (bypassXfade > 0.0f)
+                {
+                    outL = (1.0f - bypassXfade) * postGainL + dryL * bypassXfade;
+                    outR = (1.0f - bypassXfade) * postGainR + dryR * bypassXfade;
+
+                    bypassXfade += bypassXfadeInc;
+                    if (bypassXfade >= 1.0f)
+                    {
+                        bypassXfade = 0.0f;
+                    }
+                }
+                else
+                {
+                    outL = dryL;
+                    outR = dryR;
+                }
+            }
+            else
+            {
+                if (bypassXfade > 0.0f)
+                {
+                    outL = (1.0f - bypassXfade) * dryL + postGainL * bypassXfade;
+                    outR = (1.0f - bypassXfade) * dryR + postGainR * bypassXfade;
+
+                    bypassXfade += bypassXfadeInc;
+                    if (bypassXfade >= 1.0f)
+                    {
+                        bypassXfade = 0.0f;
+                    }
+                }
+            }
 
             outputDataL[sample] = outL;
             outputDataR[sample] = outR;
@@ -433,10 +479,49 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, [[mayb
 
             float mix = (1.0f - params.mix) * dry + wet * params.mix;
 
-            float outL = mix * params.gain;
-            outputDataL[sample] = outL;
-            maxL = std::max(maxL, std::abs(outL));
-            maxR = std::max(maxL, std::abs(outL));
+            float postGain = mix * params.gain;
+            float out = postGain;
+
+            if (params.bypassed != lastBypass)
+            {
+                lastBypass = params.bypassed;
+                bypassXfade = bypassXfadeInc;
+            }
+
+            if (params.bypassed)
+            {
+                if (bypassXfade > 0.0f)
+                {
+                    out = (1.0f - bypassXfade) * postGain + dry * bypassXfade;
+
+                    bypassXfade += bypassXfadeInc;
+                    if (bypassXfade >= 1.0f)
+                    {
+                        bypassXfade = 0.0f;
+                    }
+                }
+                else
+                {
+                    out = dry;
+                }
+            }
+            else
+            {
+                if (bypassXfade > 0.0f)
+                {
+                    out = (1.0f - bypassXfade) * dry + postGain * bypassXfade;
+
+                    bypassXfade += bypassXfadeInc;
+                    if (bypassXfade >= 1.0f)
+                    {
+                        bypassXfade = 0.0f;
+                    }
+                }
+            }
+
+            outputDataL[sample] = out;
+            maxL = std::max(maxL, std::abs(out));
+            maxR = std::max(maxL, std::abs(out));
         }
     }
 
@@ -473,6 +558,11 @@ void DelayAudioProcessor::setStateInformation (const void* data, int sizeInBytes
     {
         apvts.replaceState(juce::ValueTree::fromXml(*xml));
     }
+}
+
+juce::AudioProcessorParameter* DelayAudioProcessor::getBypassParameter() const
+{
+    return params.bypassParam;
 }
 
 //==============================================================================
